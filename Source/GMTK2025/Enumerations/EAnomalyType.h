@@ -2,8 +2,10 @@
 
 #pragma once
 
+UENUM()
 enum class EAnomalyType
 {
+	None,
 	Addition,
 	Substraction,
 	On,
