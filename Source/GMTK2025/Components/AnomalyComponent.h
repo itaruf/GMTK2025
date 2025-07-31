@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Enumerations/EAnomalyType.h"
 #include "AnomalyComponent.generated.h"
-
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class GMTK2025_API UAnomalyComponent : public UActorComponent
@@ -24,5 +24,7 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-		
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EAnomalyType AnomalyType;
 };

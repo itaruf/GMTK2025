@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Components/AnomalyComponent.h"
+#include "AnomalyComponent.h"
 
 // Sets default values for this component's properties
 UAnomalyComponent::UAnomalyComponent()
@@ -10,7 +10,7 @@ UAnomalyComponent::UAnomalyComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	// ...
+	AnomalyType = EAnomalyType::None;
 }
 
 
