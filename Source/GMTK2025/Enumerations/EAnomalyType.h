@@ -2,14 +2,16 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-
-/**
- * 
- */
-class GMTK2025_API EAnomalyType
+enum class EAnomalyType
 {
-public:
-	EAnomalyType();
-	~EAnomalyType();
+	Addition,
+	Substraction,
+	On,
+	Off,
+	Position,
+	Rotation,
+	Scale,
+	Display,
+	Texture,
+	Stain,
 };
