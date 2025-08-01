@@ -4,5 +4,14 @@
 
 AGMTK2025GameMode::AGMTK2025GameMode()
 {
-	// stub
+}
+
+void AGMTK2025GameMode::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (UAnomalySubsystem* Sub = GetWorld()->GetSubsystem<UAnomalySubsystem>())
+	{
+		Sub->TriggerAnomaly();
+	}
 }
