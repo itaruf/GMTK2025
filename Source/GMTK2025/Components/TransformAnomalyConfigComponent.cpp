@@ -110,7 +110,8 @@ void UTransformAnomalyConfigComponent::RebuildPreviews()
 	UMaterialInterface* GhostMat = Cast<UMaterialInterface>(
 		StaticLoadObject(UMaterialInterface::StaticClass(), nullptr,
 		                 TEXT(
-			                 "/Engine/EngineDebugMaterials/VertexColorViewMode_GreenOnly.VertexColorViewMode_GreenOnly")));
+			                 "/Game/Anomalies/Materials/M_AnomalyWireframePreview.M_AnomalyWireframePreview")));
+	
 
 	int32 Counter = 0;
 	for (ATargetPoint* TP : PossibleTargetPoints)
