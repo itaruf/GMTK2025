@@ -1,4 +1,5 @@
-﻿// PositionAnomalyEffect.cpp
+﻿// Fill out your copyright notice in the Description page of Project Settings.
+
 #include "PositionAnomalyEffect.h"
 #include "GameFramework/Actor.h"
 #include "Math/UnrealMathUtility.h"

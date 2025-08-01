@@ -1,3 +1,5 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
 #include "AnomalyComponent.h"
 #include "Math/UnrealMathUtility.h"
 #include "Subsystems/AnomalySubsystem.h"
