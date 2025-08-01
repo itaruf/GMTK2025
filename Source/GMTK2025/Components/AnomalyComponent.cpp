@@ -1,34 +1,93 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "AnomalyComponent.h"
+#include "Math/UnrealMathUtility.h"
+#include "Subsystems/AnomalySubsystem.h"
+#include "UObject/UObjectGlobals.h"
 
-// Sets default values for this component's properties
+class UAnomalySubsystem;
+
 UAnomalyComponent::UAnomalyComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
+	CurrentAnomalyType = EAnomalyType::None;
 
-	AnomalyType = EAnomalyType::None;
+	AnomalyTypeWeights.Add(EAnomalyType::Position, 1);
+	AnomalyTypeWeights.Add(EAnomalyType::Rotation, 1);
+	AnomalyTypeWeights.Add(EAnomalyType::Scale, 1);
 }
 
-
-// Called when the game starts
 void UAnomalyComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
-	
+	if (UAnomalySubsystem* Sub = GetWorld()->GetSubsystem<UAnomalySubsystem>())
+	{
+		Sub->RegisterComponent(this);
+	}
 }
 
-
-// Called every frame
-void UAnomalyComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UAnomalyComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	if (UAnomalySubsystem* Sub = GetWorld()->GetSubsystem<UAnomalySubsystem>())
+	{
+		Sub->UnregisterComponent(this);
+	}
 
-	// ...
+	Super::EndPlay(EndPlayReason);
 }
 
+void UAnomalyComponent::Select()
+{
+	// Calculate total weight
+	int32 TotalWeight = 0;
+	for (const auto& Pair : AnomalyTypeWeights)
+	{
+		TotalWeight += Pair.Value;
+	}
+	if (TotalWeight <= 0)
+	{
+		CurrentAnomalyType = EAnomalyType::None;
+		return;
+	}
+
+	// Pick a random number in [1,TotalWeight]
+	int32 Roll = FMath::RandRange(1, TotalWeight);
+	int32 Accum = 0;
+	for (const auto& Pair : AnomalyTypeWeights)
+	{
+		Accum += Pair.Value;
+		if (Roll <= Accum)
+		{
+			CurrentAnomalyType = Pair.Key;
+			break;
+		}
+	}
+}
+
+void UAnomalyComponent::Apply()
+{
+	if (CurrentAnomalyType == EAnomalyType::None)
+	{
+		return;
+	}
+
+	// Find the effect class for the chosen type
+	if (TSubclassOf<UAnomalyEffect>* Found = EffectClassMap.Find(CurrentAnomalyType))
+	{
+		if (UClass* EffectCls = *Found)
+		{
+			UAnomalyEffect* Effect = NewObject<UAnomalyEffect>(this, EffectCls);
+			if (Effect)
+			{
+				Effect->Apply(GetOwner());
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Effect class for %s is null"), *UEnum::GetValueAsString(CurrentAnomalyType));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No effect mapped for %s"), *UEnum::GetValueAsString(CurrentAnomalyType));
+	}
+}

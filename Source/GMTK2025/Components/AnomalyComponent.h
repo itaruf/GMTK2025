@@ -4,27 +4,39 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Effects/AnomalyEffect.h"
 #include "Enumerations/EAnomalyType.h"
 #include "AnomalyComponent.generated.h"
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class GMTK2025_API UAnomalyComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
-	// Sets default values for this component's properties
+public:
 	UAnomalyComponent();
 
+	/** Picks a random anomaly type according to weights */
+	UFUNCTION(BlueprintCallable, Category="Anomaly")
+	void Select();
+
+	/** Applies the currently selected anomaly effect */
+	UFUNCTION(BlueprintCallable, Category="Anomaly")
+	void Apply();
+
 protected:
-	// Called when the game starts
 	virtual void BeginPlay() override;
+	virtual void EndPlay(EEndPlayReason::Type EndPlayReason) override;
 
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	/** Weights for each anomaly type (defines selection probability) */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Anomaly")
+	TMap<EAnomalyType, int32> AnomalyTypeWeights;
 
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	EAnomalyType AnomalyType;
+	/** Mapping from anomaly type to its effect class (set in editor) */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Anomaly")
+	TMap<EAnomalyType, TSubclassOf<UAnomalyEffect>> EffectClassMap;
+
+	/** The anomaly type chosen by Select() */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Anomaly")
+	EAnomalyType CurrentAnomalyType;
 };
