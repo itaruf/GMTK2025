@@ -27,8 +27,13 @@ void UAnomalySubsystem::TriggerAnomaly()
 	if (Components.Num() == 0) return;
 
 	int32 Idx = FMath::RandRange(0, Components.Num() - 1);
-	UAnomalyComponent* Chosen = Components.Array()[Idx];
+	CurrentAnomalyEntity = Components.Array()[Idx];
 
-	Chosen->Select();
-	Chosen->Apply();
+	CurrentAnomalyEntity->Select();
+	CurrentAnomalyEntity->Apply();
+}
+
+void UAnomalySubsystem::Reset()
+{
+	CurrentAnomalyEntity->Reset();
 }

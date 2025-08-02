@@ -20,10 +20,23 @@ public:
 	void UnregisterComponent(UAnomalyComponent* Comp);
 
 public:
+	UFUNCTION(BlueprintCallable)
 	void TriggerAnomaly();
 
+	UFUNCTION(BlueprintCallable)
+	void Reset();
+
 private:
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	TSet<UAnomalyComponent*> Components;
-	FTimerHandle AnomalyTimer;
+	
+	UPROPERTY(VisibleAnywhere)
+	UAnomalyComponent* CurrentAnomalyEntity;
+
+public:
+	UFUNCTION(BlueprintCallable)
+	UAnomalyComponent* GetCurrentAnomalyEntity() const
+	{
+		return CurrentAnomalyEntity;
+	}
 };
