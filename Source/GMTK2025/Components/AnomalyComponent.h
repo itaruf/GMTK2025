@@ -48,4 +48,17 @@ private:
 	/** The effect we actually instantiated and applied — kept to call Revert() later */
 	UPROPERTY()
 	UAnomalyEffect* CurrentEffect;
+
+public:
+	UFUNCTION(BlueprintCallable, Category="Anomaly")
+	EAnomalyType GetCurrentAnomalyType() const
+	{
+		return CurrentAnomalyType;
+	}
+
+	UFUNCTION(BlueprintCallable, Category="Anomaly")
+	UAnomalyEffect* GetCurrentEffect() const
+	{
+		return CurrentEffect;
+	}
 };
