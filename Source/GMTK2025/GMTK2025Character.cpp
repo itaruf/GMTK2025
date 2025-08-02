@@ -75,6 +75,8 @@ void AGMTK2025Character::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EnhancedInputComponent->BindAction(JetpackAction, ETriggerEvent::Triggered, this, &AGMTK2025Character::FlyJetpack);
 		EnhancedInputComponent->BindAction(JetpackAction, ETriggerEvent::Started, this, &AGMTK2025Character::StartJetpack);
 		EnhancedInputComponent->BindAction(JetpackAction, ETriggerEvent::Completed, this, &AGMTK2025Character::StopJetpack);
+
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started,this, &AGMTK2025Character::Interact);
 	}
 	else
 	{
@@ -162,4 +164,3 @@ void AGMTK2025Character::FlyJetpack()
 	JetpackComponent->Fly();
 */
 }
-

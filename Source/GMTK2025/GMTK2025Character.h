@@ -57,6 +57,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
 	UInputAction* JetpackAction;
 
+	/** Other existing InputActions… */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
+	UInputAction* InteractAction;
+
 public:
 
 	/** Constructor */
@@ -101,6 +105,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category="Input")
 	void FlyJetpack();
+
+	UFUNCTION(BlueprintImplementableEvent, Category="Input")
+	void Interact(const FInputActionValue& Value);
 
 public:
 
