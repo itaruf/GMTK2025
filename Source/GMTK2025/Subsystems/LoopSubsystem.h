@@ -6,66 +6,66 @@
 #include "Subsystems/WorldSubsystem.h"
 #include "LoopSubsystem.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLoopTransitionStart);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLoopContinueEvent, int32, Iteration);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLoopEvent, bool, bSuccess);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLoopContinueEvent, int, Iteration);
 
 UCLASS()
 class GMTK2025_API ULoopSubsystem : public UWorldSubsystem
 {
-private:
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable)
-	int32 GetTotalIterations() const
-	{
-		return TotalIterations;
-	}
+    // Called once at game start or after a loss
+    UFUNCTION(BlueprintCallable) 
+    void StartLoop();
+    
+    // Call when player reports “I see an anomaly”
+    UFUNCTION(BlueprintCallable) 
+    void ReportAnomaly();
+    
+    // Call when player steps through the mirror to continue
+    UFUNCTION(BlueprintCallable) 
+    void ContinueLoop();
 
-	UFUNCTION(BlueprintCallable)
-	int32 GetAnomalyIteration() const
-	{
-		return AnomalyIteration;
-	}
+    // How long (seconds) the screen stays black during a transition
+    UPROPERTY(EditAnywhere, Category="Loop")
+    float TransitionDelay = 2.f;
 
-	UFUNCTION(BlueprintCallable)
-	int32 GetCurrentIteration() const
-	{
-		return CurrentIteration;
-	}
+    // Fires immediately so UI can start fade‐out (both advance and fail)
+    UPROPERTY(BlueprintAssignable, Category="Loop")
+    FOnLoopTransitionStart OnLoopTransitionStart;
 
-	// Called once at game start or after a loss
-	UFUNCTION(BlueprintCallable)
-	void StartLoop();
+    // Fires after TransitionDelay with the new iteration index
+    UPROPERTY(BlueprintAssignable, Category="Loop")
+    FOnLoopContinueEvent OnLoopContinue;
 
-	// Called once at game start or after a loss
-	UFUNCTION(BlueprintCallable)
-	void ResetLoop();
+    // Fires immediately after a win or loss decision
+    UPROPERTY(BlueprintAssignable, Category="Loop")
+    FOnLoopEvent OnLoopEnd;
 
-	// Call when player reports “I see an anomaly”
-	UFUNCTION(BlueprintCallable)
-	void ReportAnomaly();
-
-	// Call when player steps through the mirror to continue
-	UFUNCTION(BlueprintCallable)
-	void ContinueLoop();
-
-	// Loop result (true=win, false=lose)
-	UPROPERTY(BlueprintAssignable)
-	FOnLoopEvent OnLoopEnd;
-
-	// Loop result (true=win, false=lose)
-	UPROPERTY(BlueprintAssignable)
-	FOnLoopContinueEvent OnLoopContinue;
+    // Query helpers
+    UFUNCTION(BlueprintCallable, Category="Loop") int32 GetCurrentIteration() const { return CurrentIteration; }
+    UFUNCTION(BlueprintCallable, Category="Loop") int32 GetTotalIterations()   const { return TotalIterations; }
+    UFUNCTION(BlueprintCallable, Category="Loop") int32 GetAnomalyIteration() const { return AnomalyIteration; }
 
 protected:
-	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+    virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
 private:
-	int32 TotalIterations; // N
-	int32 AnomalyIteration; // A (0 = no anomaly this run)
-	int32 CurrentIteration; // increments from 1…N
+    // The one‐shot helper that runs behind the black screen
+    void PerformAdvance();
+    void PerformFail();
 
-	void FailLoop();
-	void SucceedLoop();
+    // Internal helpers
+    void FailLoopImmediate();
+    void SucceedLoopImmediate();
+
+    // State
+    int32 TotalIterations = 0;    // N
+    int32 AnomalyIteration = 0;   // A (0 = no anomaly)
+    int32 CurrentIteration = 0;   // 1…N
+
+    // Timer handle for the delayed transition
+    FTimerHandle TransitionTimerHandle;
 };

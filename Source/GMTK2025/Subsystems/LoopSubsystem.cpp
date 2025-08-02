@@ -2,97 +2,115 @@
 
 #include "LoopSubsystem.h"
 #include "AnomalySubsystem.h"
-#include "Kismet/GameplayStatics.h"
+#include "TimerManager.h"
+#include "Engine/World.h"
 
 void ULoopSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
-	Super::Initialize(Collection);
-	StartLoop();
+    Super::Initialize(Collection);
+    StartLoop();
 }
 
 void ULoopSubsystem::StartLoop()
 {
-	// Choose total iterations TODO: remove hard-coded values
-	TotalIterations = FMath::RandRange(5, 7);
-
-	// 1 in (TotalIterations+1) chance to have no anomaly
-	int32 Choice = FMath::RandRange(0, TotalIterations);
-	AnomalyIteration = (Choice == 0 ? 0 : Choice);
-
-	CurrentIteration = 0;
-}
-
-void ULoopSubsystem::ResetLoop()
-{
-	// Anomaly entity needs to revert to its initial state
-	if (auto* Anom = GetWorld()->GetSubsystem<UAnomalySubsystem>())
-	{
-		Anom->Reset();
-	}
+    // Choose total iterations TODO: remove hard-coded values
+    TotalIterations = FMath::RandRange(4, 6);
+    
+    // 1 in (TotalIterations+1) chance to have no anomaly
+    int32 Choice      = FMath::RandRange(0, TotalIterations);
+    AnomalyIteration  = (Choice == 0 ? 0 : Choice);
+    
+    CurrentIteration  = 0;
 }
 
 void ULoopSubsystem::ContinueLoop()
 {
-	CurrentIteration++;
+    CurrentIteration++;
 
-	// If they escaped past the anomaly without reporting it
-	if (CurrentIteration - 1 == AnomalyIteration && AnomalyIteration != 0)
-	{
-		// They didn’t call ReportAnomaly(), so they missed it
-		FailLoop();
-		return;
-	}
+    // 1) Did they skip an anomaly ?
+    if (CurrentIteration - 1 == AnomalyIteration && AnomalyIteration != 0)
+    {
+        // Schedule a transition
+        OnLoopTransitionStart.Broadcast();
+        GetWorld()->GetTimerManager().SetTimer(
+            TransitionTimerHandle, this, &ULoopSubsystem::PerformFail,
+            TransitionDelay, false
+        );
+        return;
+    }
 
-	OnLoopContinue.Broadcast(CurrentIteration);
-	
-	// Trigger anomaly only on the chosen iteration
-	if (CurrentIteration == AnomalyIteration && AnomalyIteration != 0)
-	{
-		if (auto* Anom = GetWorld()->GetSubsystem<UAnomalySubsystem>())
-		{
-			Anom->TriggerAnomaly();
-		}
-	}
+    // 2) Did they finish all without anomaly ?
+    if (CurrentIteration >= TotalIterations)
+    {
+        if (AnomalyIteration == 0)
+        {
+            // Win immediately (you could also fade first if desired)
+            SucceedLoopImmediate();
+        }
+        else
+        {
+            // They never reported the anomaly
+            OnLoopTransitionStart.Broadcast();
+            GetWorld()->GetTimerManager().SetTimer(
+                TransitionTimerHandle, this, &ULoopSubsystem::PerformFail,
+                TransitionDelay, false
+            );
+        }
+        return;
+    }
 
-	// If this was the last iteration
-	if (CurrentIteration >= TotalIterations)
-	{
-		// If no anomaly was ever scheduled:
-		if (AnomalyIteration == 0)
-		{
-			SucceedLoop();
-		}
-		else
-		{
-			// They made it to the end without reporting the scheduled anomaly
-			FailLoop();
-		}
-	}
+    // 3) Normal advance
+    OnLoopTransitionStart.Broadcast();
+    GetWorld()->GetTimerManager().SetTimer(
+        TransitionTimerHandle, this, &ULoopSubsystem::PerformAdvance,
+        TransitionDelay, false
+    );
 }
 
 void ULoopSubsystem::ReportAnomaly()
 {
-	// Called when player “spots” something
-	if (CurrentIteration == AnomalyIteration && AnomalyIteration != 0)
-	{
-		SucceedLoop();
-	}
-	else
-	{
-		FailLoop();
-	}
+    if (CurrentIteration == AnomalyIteration && AnomalyIteration != 0)
+    {
+        SucceedLoopImmediate();
+    }
+    else
+    {
+        OnLoopTransitionStart.Broadcast();
+        GetWorld()->GetTimerManager().SetTimer(
+            TransitionTimerHandle, this, &ULoopSubsystem::PerformFail,
+            TransitionDelay, false
+        );
+    }
 }
 
-void ULoopSubsystem::FailLoop()
+void ULoopSubsystem::PerformAdvance()
 {
-	OnLoopEnd.Broadcast(false);
-	// Reset the loop
-	ResetLoop();
-	// Restart the loop
-	StartLoop();
+    if (CurrentIteration == AnomalyIteration && AnomalyIteration != 0)
+    {
+        if (auto* Anom = GetWorld()->GetSubsystem<UAnomalySubsystem>())
+        {
+            Anom->TriggerAnomaly();
+        }
+    }
+
+    OnLoopContinue.Broadcast(CurrentIteration);
 }
 
-void ULoopSubsystem::SucceedLoop()
+void ULoopSubsystem::PerformFail()
 {
-	OnLoopEnd.Broadcast(true);
+    if (auto* Anom = GetWorld()->GetSubsystem<UAnomalySubsystem>())
+    {
+        Anom->Reset();
+    }
+
+    StartLoop();
+
+    OnLoopContinue.Broadcast(CurrentIteration);
+
+    OnLoopEnd.Broadcast(false);
+}
+
+void ULoopSubsystem::SucceedLoopImmediate()
+{
+    OnLoopEnd.Broadcast(true);
 }
