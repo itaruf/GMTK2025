@@ -5,9 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "Subsystems/AnomalySubsystem.h"
+#include "Subsystems/LoopSubsystem.h"
 #include "GMTK2025GameMode.generated.h"
 
 class UAnomalySubsystem;
+class ULoopSubsystem;
 /**
  *  Simple GameMode for a third person game
  */
@@ -20,4 +22,6 @@ public:
 	/** Constructor */
 	AGMTK2025GameMode();
 	void BeginPlay();
+	UFUNCTION(BlueprintCallable)
+	void HandleLoopEnd(bool bSuccess);
 };
