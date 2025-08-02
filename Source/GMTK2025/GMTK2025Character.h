@@ -10,6 +10,7 @@
 class USpringArmComponent;
 class UCameraComponent;
 class UInputAction;
+class UJetpackComponent;
 struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
@@ -30,7 +31,10 @@ class AGMTK2025Character : public ACharacter
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera;
-	
+
+	/*UPROPERTY(Category=Character, VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+	UJetpackComponent* JetpackComponent;*/
+
 protected:
 
 	/** Jump Input Action */
@@ -48,6 +52,10 @@ protected:
 	/** Mouse Look Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
 	UInputAction* MouseLookAction;
+
+	/** Jetpack Action Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
+	UInputAction* JetpackAction;
 
 public:
 
@@ -84,6 +92,15 @@ public:
 	/** Handles jump pressed inputs from either controls or UI interfaces */
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoJumpEnd();
+
+	UFUNCTION(BlueprintCallable, Category="Input")
+	void StartJetpack();
+	
+	UFUNCTION(BlueprintCallable, Category="Input")
+	void StopJetpack();
+	
+	UFUNCTION(BlueprintCallable, Category="Input")
+	void FlyJetpack();
 
 public:
 

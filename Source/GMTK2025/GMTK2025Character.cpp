@@ -10,6 +10,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "Components/JetpackComponent.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -49,6 +50,9 @@ AGMTK2025Character::AGMTK2025Character()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+	/*
+	JetpackComponent = CreateDefaultSubobject<UJetpackComponent>(TEXT("JetpackComponent"));
+*/
 }
 
 void AGMTK2025Character::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -57,8 +61,8 @@ void AGMTK2025Character::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
 		
 		// Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+		/*EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);*/
 
 		// Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AGMTK2025Character::Move);
@@ -66,6 +70,11 @@ void AGMTK2025Character::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AGMTK2025Character::Look);
+
+		// Jetpack
+		EnhancedInputComponent->BindAction(JetpackAction, ETriggerEvent::Triggered, this, &AGMTK2025Character::FlyJetpack);
+		EnhancedInputComponent->BindAction(JetpackAction, ETriggerEvent::Started, this, &AGMTK2025Character::StartJetpack);
+		EnhancedInputComponent->BindAction(JetpackAction, ETriggerEvent::Completed, this, &AGMTK2025Character::StopJetpack);
 	}
 	else
 	{
@@ -132,3 +141,25 @@ void AGMTK2025Character::DoJumpEnd()
 	// signal the character to stop jumping
 	StopJumping();
 }
+
+void AGMTK2025Character::StartJetpack()
+{
+	/*
+	JetpackComponent->ActivateJetpack();
+*/
+}
+
+void AGMTK2025Character::StopJetpack()
+{
+	/*
+	JetpackComponent->DeactivateJetpack();
+*/
+}
+
+void AGMTK2025Character::FlyJetpack()
+{
+	/*
+	JetpackComponent->Fly();
+*/
+}
+
