@@ -35,5 +35,6 @@ void UAnomalySubsystem::TriggerAnomaly()
 
 void UAnomalySubsystem::Reset()
 {
-	CurrentAnomalyEntity->Reset();
+	if (CurrentAnomalyEntity)
+		CurrentAnomalyEntity->Reset();
 }
