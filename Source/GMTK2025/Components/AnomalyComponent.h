@@ -24,6 +24,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Anomaly")
 	void Apply();
 
+	/** Restores whatever we changed back to its pre-anomaly state */
 	UFUNCTION(BlueprintCallable, Category="Anomaly")
 	void Reset();
 
@@ -42,4 +43,9 @@ protected:
 	/** The anomaly type chosen by Select() */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Anomaly")
 	EAnomalyType CurrentAnomalyType;
+
+private:
+	/** The effect we actually instantiated and applied — kept to call Revert() later */
+	UPROPERTY()
+	UAnomalyEffect* CurrentEffect;
 };

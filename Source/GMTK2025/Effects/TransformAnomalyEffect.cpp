@@ -4,11 +4,18 @@
 #include "GameFramework/Actor.h"
 #include "Math/UnrealMathUtility.h"
 
+void UTransformAnomalyEffect::Backup_Implementation(AActor* Target)
+{
+	if (Target)
+	{
+		OriginalTransform = Target->GetActorTransform();
+	}
+}
+
 void UTransformAnomalyEffect::Apply_Implementation(AActor* Target)
 {
 	if (!Target) return;
 
-	// Look for the config component on this actor:
 	if (UTransformAnomalyConfigComponent* Config =
 		Target->FindComponentByClass<UTransformAnomalyConfigComponent>())
 	{
@@ -18,8 +25,8 @@ void UTransformAnomalyEffect::Apply_Implementation(AActor* Target)
 			if (ATargetPoint* Chosen = Config->PossibleTargetPoints[Idx])
 			{
 				Target->SetActorLocationAndRotation(
-					Chosen->GetActorLocation(),
-					Chosen->GetActorRotation()
+				  Chosen->GetActorLocation(),
+				  Chosen->GetActorRotation()
 				);
 				return;
 			}
@@ -27,6 +34,14 @@ void UTransformAnomalyEffect::Apply_Implementation(AActor* Target)
 	}
 
 	UE_LOG(LogTemp, Warning,
-		   TEXT("TransformAnomalyEffect on %s: missing TransformAnomalyConfigComponent or no points !"),
-		   *Target->GetName());
+	   TEXT("TransformAnomalyEffect on %s: missing ConfigComponent or no points!"),
+	   *Target->GetName());
+}
+
+void UTransformAnomalyEffect::Revert_Implementation(AActor* Target)
+{
+	if (Target)
+	{
+		Target->SetActorTransform(OriginalTransform);
+	}
 }

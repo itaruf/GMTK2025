@@ -11,10 +11,11 @@ UAnomalyComponent::UAnomalyComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
 	CurrentAnomalyType = EAnomalyType::None;
+	CurrentEffect = nullptr;
 
 	AnomalyTypeWeights.Add(EAnomalyType::Position, 1);
 	AnomalyTypeWeights.Add(EAnomalyType::Rotation, 1);
-	AnomalyTypeWeights.Add(EAnomalyType::Scale, 1);
+	AnomalyTypeWeights.Add(EAnomalyType::Scale,    1);
 }
 
 void UAnomalyComponent::BeginPlay()
@@ -68,19 +69,20 @@ void UAnomalyComponent::Select()
 void UAnomalyComponent::Apply()
 {
 	if (CurrentAnomalyType == EAnomalyType::None)
-	{
 		return;
-	}
 
-	// Find the effect class for the chosen type
 	if (TSubclassOf<UAnomalyEffect>* Found = EffectClassMap.Find(CurrentAnomalyType))
 	{
 		if (UClass* EffectCls = *Found)
 		{
-			UAnomalyEffect* Effect = NewObject<UAnomalyEffect>(this, EffectCls);
-			if (Effect)
+			// Instantiate and keep it around
+			CurrentEffect = NewObject<UAnomalyEffect>(this, EffectCls);
+			if (CurrentEffect)
 			{
-				Effect->Apply(GetOwner());
+				// Backup state before we mutate
+				CurrentEffect->Backup(GetOwner());
+				// Perform anomaly
+				CurrentEffect->Apply(GetOwner());
 			}
 		}
 		else
@@ -96,6 +98,10 @@ void UAnomalyComponent::Apply()
 
 void UAnomalyComponent::Reset()
 {
-	// Reset the entity back to its original state prior the applied effect
-	
+	if (CurrentEffect)
+	{
+		// Undo the anomaly
+		CurrentEffect->Revert(GetOwner());
+		CurrentEffect = nullptr;
+	}
 }
