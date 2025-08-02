@@ -7,6 +7,7 @@
 #include "LoopSubsystem.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLoopEvent, bool, bSuccess);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLoopContinueEvent, int, Iteration);
 
 UCLASS()
 class GMTK2025_API ULoopSubsystem : public UWorldSubsystem
@@ -52,6 +53,10 @@ public:
 	// Loop result (true=win, false=lose)
 	UPROPERTY(BlueprintAssignable)
 	FOnLoopEvent OnLoopEnd;
+
+	// Loop result (true=win, false=lose)
+	UPROPERTY(BlueprintAssignable)
+	FOnLoopContinueEvent OnLoopContinue;
 
 protected:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;

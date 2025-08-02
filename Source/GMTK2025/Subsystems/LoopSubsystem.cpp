@@ -43,6 +43,8 @@ void ULoopSubsystem::ContinueLoop()
 		return;
 	}
 
+	OnLoopContinue.Broadcast(CurrentIteration);
+	
 	// Trigger anomaly only on the chosen iteration
 	if (CurrentIteration == AnomalyIteration && AnomalyIteration != 0)
 	{
