@@ -24,6 +24,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Anomaly")
 	void Apply();
 
+	UFUNCTION(BlueprintCallable, Category="Anomaly")
+	void Reset();
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(EEndPlayReason::Type EndPlayReason) override;

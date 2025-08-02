@@ -93,3 +93,9 @@ void UAnomalyComponent::Apply()
 		UE_LOG(LogTemp, Warning, TEXT("No effect mapped for %s"), *UEnum::GetValueAsString(CurrentAnomalyType));
 	}
 }
+
+void UAnomalyComponent::Reset()
+{
+	// Reset the entity back to its original state prior the applied effect
+	
+}
