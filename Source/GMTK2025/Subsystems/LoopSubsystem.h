@@ -68,4 +68,20 @@ private:
 
     // Timer handle for the delayed transition
     FTimerHandle TransitionTimerHandle;
+
+    // Player original start position
+    FTransform PlayerStartTransform;
+
+public:
+    UFUNCTION(BlueprintCallable, Category="Loop")
+    FTransform GetPlayerStartTransform() const
+    {
+        return PlayerStartTransform;
+    }
+
+    UFUNCTION(BlueprintCallable, Category="Loop")
+    void SetPlayerStartTransform(const FTransform& NewPlayerStartTransform)
+    {
+        this->PlayerStartTransform = NewPlayerStartTransform;
+    }
 };
