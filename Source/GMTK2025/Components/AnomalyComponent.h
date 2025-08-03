@@ -44,8 +44,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Anomaly")
 	EAnomalyType CurrentAnomalyType;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Anomaly")
-	FName Name;
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category="Anomaly",
+			  meta=(DisplayName="Anomaly Display Name"))
+	FName AnomalyDisplayName;
 
 private:
 	/** The effect we actually instantiated and applied — kept to call Revert() later */
@@ -66,8 +67,8 @@ public:
 	}
 
 	UFUNCTION(BlueprintCallable, Category="Anomaly")
-	FName GetName() const
+	FName GetAnomalyDisplayName() const
 	{
-		return Name;
+		return AnomalyDisplayName;
 	}
 };

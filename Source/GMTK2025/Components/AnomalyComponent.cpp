@@ -16,6 +16,7 @@ UAnomalyComponent::UAnomalyComponent()
 	AnomalyTypeWeights.Add(EAnomalyType::Position, 1);
 	AnomalyTypeWeights.Add(EAnomalyType::Substraction, 1);
 	AnomalyTypeWeights.Add(EAnomalyType::Scale,    1);
+	AnomalyTypeWeights.Add(EAnomalyType::Texture,    1);
 }
 
 void UAnomalyComponent::BeginPlay()
