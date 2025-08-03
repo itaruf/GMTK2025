@@ -14,7 +14,7 @@ UAnomalyComponent::UAnomalyComponent()
 	CurrentEffect = nullptr;
 
 	AnomalyTypeWeights.Add(EAnomalyType::Position, 1);
-	AnomalyTypeWeights.Add(EAnomalyType::Rotation, 1);
+	AnomalyTypeWeights.Add(EAnomalyType::Substraction, 1);
 	AnomalyTypeWeights.Add(EAnomalyType::Scale,    1);
 }
 
