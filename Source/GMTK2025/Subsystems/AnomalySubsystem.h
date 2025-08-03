@@ -7,6 +7,8 @@
 #include "Components/AnomalyComponent.h"
 #include "AnomalySubsystem.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAnomFailEvent, UAnomalyComponent*, AnomalyComponent);
+
 UCLASS()
 class GMTK2025_API UAnomalySubsystem : public UWorldSubsystem
 {
@@ -26,6 +28,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Reset();
 
+	// Fires immediately after a win or loss decision
+	UPROPERTY(BlueprintAssignable, Category="Loop")
+	FOnAnomFailEvent OnAnomFail;
+
+	
 private:
 	UPROPERTY(VisibleAnywhere)
 	TSet<UAnomalyComponent*> Components;

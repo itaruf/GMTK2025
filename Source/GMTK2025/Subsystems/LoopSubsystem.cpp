@@ -100,6 +100,7 @@ void ULoopSubsystem::PerformFail()
 {
     if (auto* Anom = GetWorld()->GetSubsystem<UAnomalySubsystem>())
     {
+        Anom->OnAnomFail.Broadcast(Anom->GetCurrentAnomalyEntity());
         Anom->Reset();
     }
 
