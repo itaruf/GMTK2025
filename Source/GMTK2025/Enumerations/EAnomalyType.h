@@ -15,5 +15,4 @@ enum class EAnomalyType
 	Scale,
 	Display,
 	Texture,
-	Stain,
 };
