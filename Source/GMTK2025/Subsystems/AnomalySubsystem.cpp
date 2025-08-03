@@ -36,5 +36,8 @@ void UAnomalySubsystem::TriggerAnomaly()
 void UAnomalySubsystem::Reset()
 {
 	if (CurrentAnomalyEntity)
+	{
 		CurrentAnomalyEntity->Reset();
+		CurrentAnomalyEntity = nullptr;
+	}
 }
