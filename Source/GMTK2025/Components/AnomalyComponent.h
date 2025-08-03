@@ -41,8 +41,11 @@ protected:
 	TMap<EAnomalyType, TSubclassOf<UAnomalyEffect>> EffectClassMap;
 
 	/** The anomaly type chosen by Select() */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Anomaly")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Anomaly")
 	EAnomalyType CurrentAnomalyType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Anomaly")
+	FName Name;
 
 private:
 	/** The effect we actually instantiated and applied — kept to call Revert() later */
@@ -60,5 +63,11 @@ public:
 	UAnomalyEffect* GetCurrentEffect() const
 	{
 		return CurrentEffect;
+	}
+
+	UFUNCTION(BlueprintCallable, Category="Anomaly")
+	FName GetName() const
+	{
+		return Name;
 	}
 };
