@@ -39,7 +39,7 @@ void ULoopSubsystem::ContinueLoop()
     // 1) Did they skip an anomaly ?
     if (CurrentIteration - 1 == AnomalyIteration && AnomalyIteration != 0)
     {
-        // Schedule a transition
+        // They missed reporting it
         OnLoopTransitionStart.Broadcast();
         GetWorld()->GetTimerManager().SetTimer(
             TransitionTimerHandle, this, &ULoopSubsystem::PerformFail,
@@ -49,11 +49,10 @@ void ULoopSubsystem::ContinueLoop()
     }
 
     // 2) Did they finish all without anomaly ?
-    if (CurrentIteration >= TotalIterations)
+    if (CurrentIteration > TotalIterations)
     {
         if (AnomalyIteration == 0)
         {
-            // Win immediately (you could also fade first if desired)
             SucceedLoopImmediate();
         }
         else
@@ -67,7 +66,7 @@ void ULoopSubsystem::ContinueLoop()
         }
         return;
     }
-
+    
     // 3) Normal advance
     OnLoopTransitionStart.Broadcast();
     GetWorld()->GetTimerManager().SetTimer(
