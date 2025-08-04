@@ -13,14 +13,23 @@ void ULoopSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 
 void ULoopSubsystem::StartLoop()
 {
-    // Choose total iterations TODO: remove hard-coded values
-    TotalIterations = FMath::RandRange(4, 6);
-    
-    // 1 in (TotalIterations+1) chance to have no anomaly
-    int32 Choice      = FMath::RandRange(0, TotalIterations);
-    AnomalyIteration  = (Choice == 0 ? 0 : Choice);
-    
-    CurrentIteration  = 0;
+    TotalIterations = 7;
+
+    // Probability of having an anomaly (e.g., 90%)
+    const float AnomalyProbability = 0.9f;
+
+    if (FMath::FRand() < AnomalyProbability)
+    {
+        // Anomaly happens on some iteration
+        AnomalyIteration = FMath::RandRange(1, TotalIterations);
+    }
+    else
+    {
+        // No anomaly this run
+        AnomalyIteration = 0;
+    }
+
+    CurrentIteration = 0;
 }
 
 void ULoopSubsystem::ContinueLoop()
